@@ -1,15 +1,8 @@
 namespace Edger.Pulumi;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using global::Pulumi;
-using global::Pulumi.Kubernetes.Core.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
-using global::Pulumi.Kubernetes.Types.Inputs.Apps.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Meta.V1;
-using global::Pulumi.Kubernetes.Types.Inputs.ApiExtensions.V1Beta1;
 
 using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 using Service = global::Pulumi.Kubernetes.Core.V1.Service;

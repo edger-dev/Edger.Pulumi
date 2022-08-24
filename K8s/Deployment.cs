@@ -1,32 +1,14 @@
 namespace Edger.Pulumi;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using global::Pulumi;
-using global::Pulumi.Kubernetes.Core.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Apps.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Meta.V1;
-using global::Pulumi.Kubernetes.Types.Inputs.ApiExtensions.V1Beta1;
 
 
 using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 
 public partial class K8s {
-    public static InputMap<string> AppLabels(string name) {
-        return new InputMap<string> {
-            { "app", name },
-        };
-    }
-
-    public static ObjectMetaArgs AppMeta(Namespace ns, string name) => new ObjectMetaArgs {
-        Namespace = ns.Value,
-        Name = name,
-        Labels = AppLabels(name),
-    };
-
     public static DeploymentSpecArgs DeploymentSpec(
             Namespace ns, string name,
             ContainerArgs container,
