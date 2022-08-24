@@ -21,7 +21,7 @@ public class ClusterApp {
             K8s.ContainerPort(portNumber)
         });
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
-        Service = K8s.Service(Deployment, new[] {
+        Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName, portNumber, portNumber),
         }).Apply(name);
         IP = Service.ClusterIP();
@@ -35,7 +35,7 @@ public class ClusterApp {
             K8s.ContainerPort(portNumber2),
         });
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
-        Service = K8s.Service(Deployment, new[] {
+        Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),
         }).Apply(name);
@@ -51,12 +51,21 @@ public class ClusterApp {
             K8s.ContainerPort(portNumber3),
         });
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
-        Service = K8s.Service(Deployment, new[] {
+        Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),
             K8s.ServicePort(portName3, portNumber3, portNumber3),
         }).Apply(name);
         IP = Service.ClusterIP();
+    }
+
+    public Service ApplyLoadBalancer(string lbName, int lbPort, int servicePort) {
+        return K8s.Service(
+            lbName, Deployment, new [] {
+                K8s.ServicePort(lbName, lbPort, servicePort),
+            },
+            serviceType: ServiceType.LoadBalancer
+        ).Apply(lbName);
     }
 
     public Ingress ApplyHostIngress(string ingressHost, int servicePort) {

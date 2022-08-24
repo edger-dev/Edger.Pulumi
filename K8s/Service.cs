@@ -9,6 +9,7 @@ using Service = global::Pulumi.Kubernetes.Core.V1.Service;
 
 public enum ServiceType {
     ClusterIP,
+    LoadBalancer,
 }
 
 public partial class K8s {
@@ -31,6 +32,7 @@ public partial class K8s {
     };
 
     public static ServiceArgs Service(
+        string name,
         Deployment deployment,
         ServicePortArgs[] ports,
         ServiceType serviceType = ServiceType.ClusterIP
@@ -38,7 +40,7 @@ public partial class K8s {
         return new ServiceArgs {
             Metadata = new ObjectMetaArgs {
                 Namespace = deployment.Metadata.Apply(m => m.Namespace),
-                Name = deployment.Metadata.Apply(m => m.Name),
+                Name = name,
                 Labels = deployment.Metadata.Apply(m => m.Labels),
             },
             Spec = ServiceSpec(deployment, ports, serviceType),
@@ -55,5 +57,9 @@ public static class ServiceArgsExtension {
 public static class ServiceExtension {
     public static Output<string> ClusterIP(this Service service) {
         return service.Spec.Apply(spec => spec.ClusterIP);
+    }
+
+    public static Output<string> LoadBalancerIP(this Service service) {
+        return service.Status.Apply(status => status.LoadBalancer.Ingress[0].Ip ?? status.LoadBalancer.Ingress[0].Hostname);
     }
 }
