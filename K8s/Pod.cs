@@ -16,9 +16,9 @@ public partial class K8s {
         Containers = { container },
     };
 
-    public static PodTemplateSpecArgs PodTemplateSpec(Input<string> ns, InputMap<string> labels, ContainerArgs container) => new PodTemplateSpecArgs {
+    public static PodTemplateSpecArgs PodTemplateSpec(Namespace ns, InputMap<string> labels, ContainerArgs container) => new PodTemplateSpecArgs {
         Metadata = new ObjectMetaArgs {
-            Namespace = ns,
+            Namespace = ns.Value,
             Labels = labels,
         },
         Spec = PodSpec(container),

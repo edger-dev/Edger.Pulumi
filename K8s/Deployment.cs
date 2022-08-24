@@ -21,14 +21,14 @@ public partial class K8s {
         };
     }
 
-    public static ObjectMetaArgs AppMeta(Input<string> ns, string name) => new ObjectMetaArgs {
-        Namespace = ns,
+    public static ObjectMetaArgs AppMeta(Namespace ns, string name) => new ObjectMetaArgs {
+        Namespace = ns.Value,
         Name = name,
         Labels = AppLabels(name),
     };
 
     public static DeploymentSpecArgs DeploymentSpec(
-            Input<string> ns, string name,
+            Namespace ns, string name,
             ContainerArgs container,
             int replicas = 1) {
         var labels = AppLabels(name);
@@ -41,7 +41,7 @@ public partial class K8s {
         };
     }
 
-    public static DeploymentArgs Deployment(Input<string> ns, string name, ContainerArgs container, int replicas = 1) {
+    public static DeploymentArgs Deployment(Namespace ns, string name, ContainerArgs container, int replicas = 1) {
         var metadata = AppMeta(ns, name);
         return new DeploymentArgs {
             Metadata = metadata,
