@@ -87,14 +87,6 @@ public partial class K8s {
             Spec = spec,
         };
     }
-
-    public static Ingress ApplyHostIngress(Namespace ns, string name, int port, string host) {
-        return Ingress(ns, name, IngressSpec(new [] {
-            IngressRule(host, HTTPIngressRuleValue(new [] {
-                HTTPIngressPath(IngressBackend(name, port))
-            })),
-        })).Apply(name);
-    }
 }
 
 public static class IngressArgsExtension {

@@ -5,19 +5,18 @@ using global::Pulumi.Kubernetes.Types.Inputs.Meta.V1;
 
 using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 using Service = global::Pulumi.Kubernetes.Core.V1.Service;
+using Ingress = global::Pulumi.Kubernetes.Networking.V1.Ingress;
 
 public class ClusterApp {
+    public readonly Namespace Namespace;
+    public readonly string Name;
     public readonly Deployment Deployment;
     public readonly Service Service;
     public readonly Output<string> IP;
 
-    public ClusterApp(Deployment deployment, Service service) {
-        Deployment = deployment;
-        Service = service;
-        IP = service.ClusterIP();
-    }
-
     public ClusterApp(Namespace ns, string name, string image, string portName, int portNumber) {
+        Namespace = ns;
+        Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber)
         });
@@ -29,6 +28,8 @@ public class ClusterApp {
     }
 
     public ClusterApp(Namespace ns, string name, string image, string portName1, int portNumber1, string portName2, int portNumber2) {
+        Namespace = ns;
+        Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
@@ -42,6 +43,8 @@ public class ClusterApp {
     }
 
     public ClusterApp(Namespace ns, string name, string image, string portName1, int portNumber1, string portName2, int portNumber3, string portName3, int portNumber2) {
+        Namespace = ns;
+        Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
@@ -54,6 +57,14 @@ public class ClusterApp {
             K8s.ServicePort(portName3, portNumber3, portNumber3),
         }).Apply(name);
         IP = Service.ClusterIP();
+    }
+
+    public Ingress ApplyHostIngress(string ingressHost, int servicePort) {
+        return K8s.Ingress(Namespace, ingressHost, K8s.IngressSpec(new [] {
+            K8s.IngressRule(ingressHost, K8s.HTTPIngressRuleValue(new [] {
+                K8s.HTTPIngressPath(K8s.IngressBackend(Name, servicePort))
+            })),
+        })).Apply(ingressHost);
     }
 }
 
