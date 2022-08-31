@@ -6,6 +6,7 @@ using global::Pulumi.Kubernetes.Types.Inputs.Meta.V1;
 using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 using Service = global::Pulumi.Kubernetes.Core.V1.Service;
 using Ingress = global::Pulumi.Kubernetes.Networking.V1.Ingress;
+using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class ClusterApp {
     public readonly Namespace Namespace;
@@ -14,12 +15,18 @@ public class ClusterApp {
     public readonly Service Service;
     public readonly Output<string> IP;
 
-    public ClusterApp(Namespace ns, string name, string image, string portName, int portNumber) {
+    public ClusterApp(
+        Namespace ns, string name, string image,
+        string portName, int portNumber,
+        EnvVarArgs[]? env = null,
+        InputList<string>? args = null,
+        InputList<string>? command = null
+    ) {
         Namespace = ns;
         Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber)
-        });
+        }, env, args, command);
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName, portNumber, portNumber),
@@ -27,13 +34,20 @@ public class ClusterApp {
         IP = Service.ClusterIP();
     }
 
-    public ClusterApp(Namespace ns, string name, string image, string portName1, int portNumber1, string portName2, int portNumber2) {
+    public ClusterApp(
+        Namespace ns, string name, string image,
+        string portName1, int portNumber1,
+        string portName2, int portNumber2,
+        EnvVarArgs[]? env = null,
+        InputList<string>? args = null,
+        InputList<string>? command = null
+    ) {
         Namespace = ns;
         Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
-        });
+        }, env, args, command);
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
@@ -42,14 +56,22 @@ public class ClusterApp {
         IP = Service.ClusterIP();
     }
 
-    public ClusterApp(Namespace ns, string name, string image, string portName1, int portNumber1, string portName2, int portNumber3, string portName3, int portNumber2) {
+    public ClusterApp(
+        Namespace ns, string name, string image,
+        string portName1, int portNumber1,
+        string portName2, int portNumber2,
+        string portName3, int portNumber3,
+        EnvVarArgs[]? env = null,
+        InputList<string>? args = null,
+        InputList<string>? command = null
+    ) {
         Namespace = ns;
         Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
             K8s.ContainerPort(portNumber3),
-        });
+        }, env, args, command);
         Deployment = K8s.Deployment(ns, name, container).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
