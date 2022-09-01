@@ -9,11 +9,23 @@ public partial class K8s {
         Containers = { container },
     };
 
-    public static PodTemplateSpecArgs PodTemplateSpec(Namespace ns, InputMap<string> labels, ContainerArgs container) => new PodTemplateSpecArgs {
-        Metadata = new ObjectMetaArgs {
-            Namespace = ns.Value,
-            Labels = labels,
-        },
-        Spec = PodSpec(container),
-    };
+    public static PodTemplateSpecArgs PodTemplateSpec(Namespace ns, InputMap<string> labels, ContainerArgs container, InputMap<string>? annotations = null) {
+        ObjectMetaArgs metadata;
+        if (annotations != null) {
+            metadata = new ObjectMetaArgs {
+                Namespace = ns.Value,
+                Labels = labels,
+                Annotations = annotations,
+            };
+        } else {
+            metadata = new ObjectMetaArgs {
+                Namespace = ns.Value,
+                Labels = labels,
+            };
+        }
+        return new PodTemplateSpecArgs {
+            Metadata = metadata,
+            Spec = PodSpec(container),
+        };
+    }
 }

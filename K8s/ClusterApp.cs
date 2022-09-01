@@ -20,14 +20,16 @@ public class ClusterApp {
         string portName, int portNumber,
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
-        InputList<string>? command = null
+        InputList<string>? command = null,
+        InputMap<string>? annotations = null,
+        int replicas = 1
     ) {
         Namespace = ns;
         Name = name;
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber)
         }, env, args, command);
-        Deployment = K8s.Deployment(ns, name, container).Apply(name);
+        Deployment = K8s.Deployment(ns, name, container, annotations, replicas).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName, portNumber, portNumber),
         }).Apply(name);
@@ -40,7 +42,9 @@ public class ClusterApp {
         string portName2, int portNumber2,
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
-        InputList<string>? command = null
+        InputList<string>? command = null,
+        InputMap<string>? annotations = null,
+        int replicas = 1
     ) {
         Namespace = ns;
         Name = name;
@@ -48,7 +52,7 @@ public class ClusterApp {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
         }, env, args, command);
-        Deployment = K8s.Deployment(ns, name, container).Apply(name);
+        Deployment = K8s.Deployment(ns, name, container, annotations, replicas).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),
@@ -63,7 +67,9 @@ public class ClusterApp {
         string portName3, int portNumber3,
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
-        InputList<string>? command = null
+        InputList<string>? command = null,
+        InputMap<string>? annotations = null,
+        int replicas = 1
     ) {
         Namespace = ns;
         Name = name;
@@ -72,7 +78,7 @@ public class ClusterApp {
             K8s.ContainerPort(portNumber2),
             K8s.ContainerPort(portNumber3),
         }, env, args, command);
-        Deployment = K8s.Deployment(ns, name, container).Apply(name);
+        Deployment = K8s.Deployment(ns, name, container, annotations, replicas).Apply(name);
         Service = K8s.Service(name, Deployment, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),

@@ -10,24 +10,31 @@ using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 
 public partial class K8s {
     public static DeploymentSpecArgs DeploymentSpec(
-            Namespace ns, string name,
-            ContainerArgs container,
-            int replicas = 1) {
+        Namespace ns, string name,
+        ContainerArgs container,
+        InputMap<string>? annotations = null,
+        int replicas = 1
+    ) {
         var labels = AppLabels(name);
         return new DeploymentSpecArgs {
             Selector = new LabelSelectorArgs {
                 MatchLabels = labels,
             },
             Replicas = replicas,
-            Template = PodTemplateSpec(ns, labels, container),
+            Template = PodTemplateSpec(ns, labels, container, annotations),
         };
     }
 
-    public static DeploymentArgs Deployment(Namespace ns, string name, ContainerArgs container, int replicas = 1) {
+    public static DeploymentArgs Deployment(
+        Namespace ns, string name,
+        ContainerArgs container,
+        InputMap<string>? annotations = null,
+        int replicas = 1
+    ) {
         var metadata = AppMeta(ns, name);
         return new DeploymentArgs {
             Metadata = metadata,
-            Spec = DeploymentSpec(ns, name, container, replicas),
+            Spec = DeploymentSpec(ns, name, container, annotations, replicas),
         };
     }
 }
