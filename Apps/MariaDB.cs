@@ -9,7 +9,6 @@ public class MariaDB : StatefulApp {
     public const int Port = 3306;
 
     public const string PvcName = "mariadb-data";
-    public const string MountName = "data";
     public const string MountPath = "/var/lib/mysql";
 
     public const string LoadBalancerName = "mariadb-external";
@@ -22,14 +21,13 @@ public class MariaDB : StatefulApp {
 
     public MariaDB(Namespace ns,
         string image,
+        Pvc pvc,
         string rootPassword,
         string user,
         string password,
-        int? lbPort = null,
-        string requestSize = "10Gi",
-        StorageClass? storageClass = null
+        int? lbPort = null
     ) : base(ns, Name, "db", Port,
-        image, GetPvcs(ns, PvcName, requestSize, storageClass), GetVolumes(MountName, PvcName), GetVolumeMounts(MountName, MountPath),
+        image, GetClaims(pvc), GetVolumeMounts(PvcName, MountPath),
         env: K8s.ContainerEnv(
             ("MYSQL_ROOT_PASSWORD", rootPassword),
             ("MYSQL_USER", user),

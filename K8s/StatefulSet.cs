@@ -15,7 +15,7 @@ public partial class K8s {
         Namespace ns, string name,
         InputMap<string> labels,
         ContainerArgs container,
-        InputList<PersistentVolumeClaimArgs> pvcs,
+        InputList<PersistentVolumeClaimArgs> pvcTemplates,
         InputList<VolumeArgs>? podVolumes,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
@@ -27,7 +27,7 @@ public partial class K8s {
             },
             Replicas = replicas,
             Template = PodTemplateSpec(ns, labels, container,podVolumes, podAnnotations),
-            VolumeClaimTemplates = pvcs,
+            VolumeClaimTemplates = pvcTemplates,
         };
     }
 

@@ -32,9 +32,9 @@ public partial class K8s {
         };
     }
 
-    public static VolumeArgs ConfigMapVolume(string name, string configMapName, bool readOnly = false) {
+    public static VolumeArgs ConfigMapVolume(string name, ConfigMap configMap, bool readOnly = false) {
         var source = new ConfigMapVolumeSourceArgs {
-            Name = configMapName,
+            Name = configMap.Metadata.Apply(m => m.Name),
         };
         return new VolumeArgs {
             Name = name,

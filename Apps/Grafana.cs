@@ -1,13 +1,13 @@
 namespace Edger.Pulumi.Apps;
 
 using Edger.Pulumi;
+using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class Grafana : StatefulApp {
     public new const string Name = "grafana";
     public const int Port = 3000;
 
     public const string PvcName = "grafana-data";
-    public const string MountName = "data";
     public const string MountPath = "/var/lib/grafana";
 
 
@@ -17,14 +17,12 @@ public class Grafana : StatefulApp {
 
     public Grafana(Namespace ns,
         string image,
-        string? ingressHost = null,
-        string requestSize = "10Gi",
-        StorageClass? storageClass = null
+        Pvc pvc,
+        string? ingressHost = null
     ) : base(ns, Name, "ui", Port,
         image,
-        GetPvcs(ns, PvcName, requestSize, storageClass),
-        GetVolumes(MountName, PvcName),
-        GetVolumeMounts(MountName, MountPath)
+        GetClaims(pvc),
+        GetVolumeMounts(PvcName, MountPath)
     ) {
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);

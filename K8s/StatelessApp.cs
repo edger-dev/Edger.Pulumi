@@ -21,11 +21,12 @@ public class StatelessApp : ClusterApp {
         InputList<VolumeArgs>? podVolumes = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
-    ) : base (ns, name, portName, portNumber) {
+    ) : base (ns, name) {
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber)
         }, env, args, command);
         Deployment = K8s.Deployment(ns, name, Labels, container, podVolumes:podVolumes, podAnnotations:podAnnotations, replicas:replicas).Apply(name);
+        SetupService(portName, portNumber);
     }
 
     public StatelessApp(
@@ -39,12 +40,13 @@ public class StatelessApp : ClusterApp {
         InputList<VolumeArgs>? podVolumes = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
-    ) : base (ns, name, portName1, portNumber1, portName2, portNumber2) {
+    ) : base (ns, name) {
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
         }, env, args, command);
         Deployment = K8s.Deployment(ns, name, Labels, container, podVolumes:podVolumes, podAnnotations:podAnnotations, replicas:replicas).Apply(name);
+        SetupService(portName1, portNumber1, portName2, portNumber2);
     }
 
     public StatelessApp(
@@ -59,12 +61,13 @@ public class StatelessApp : ClusterApp {
         InputList<VolumeArgs>? podVolumes = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
-    ) : base (ns, name, portName1, portNumber1, portName2, portNumber2, portName3, portNumber3) {
+    ) : base (ns, name) {
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
             K8s.ContainerPort(portNumber3),
         }, env, args, command);
         Deployment = K8s.Deployment(ns, name, Labels, container, podVolumes:podVolumes, podAnnotations:podAnnotations, replicas:replicas).Apply(name);
+        SetupService(portName1, portNumber1, portName2, portNumber2, portName3, portNumber3);
     }
 }

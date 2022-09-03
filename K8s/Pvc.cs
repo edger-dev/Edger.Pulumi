@@ -17,7 +17,7 @@ public enum AccessMode {
     ReadWriteMany,
 }
 
-public static class StorageClassExtention {
+public static class StorageClassExtension {
     public static string ToStorageClassName(this StorageClass v) {
         switch (v) {
             case StorageClass.LocalPath:
@@ -28,9 +28,22 @@ public static class StorageClassExtention {
     }
 }
 
+public class Pvc {
+    public readonly PersistentVolumeClaimArgs Args;
+
+    public Pvc(
+        Namespace ns,
+        string pvcName,
+        InputMap<string>? labels = null,
+        string requestSize = "10Gi",
+        StorageClass? storageClass = null
+    ) {
+        Args = K8s.PersistentVolumeClaim(ns, pvcName, labels, requestSize, storageClass);
+    }
+}
 
 public partial class K8s {
-    public static PersistentVolumeClaimSpecArgs PvcSpec(
+    public static PersistentVolumeClaimSpecArgs PersistentVolumeClaimSpec(
         string requestSize = "1Gi",
         StorageClass storageClass = StorageClass.LocalPath,
         AccessMode accessMode = AccessMode.ReadWriteOnce
@@ -47,7 +60,7 @@ public partial class K8s {
             }
         };
     }
-    public static PersistentVolumeClaimArgs Pvc(
+    public static PersistentVolumeClaimArgs PersistentVolumeClaim(
         Namespace ns, string name,
         InputMap<string>? labels = null,
         string requestSize = "1Gi",
@@ -55,24 +68,7 @@ public partial class K8s {
     ) {
         return new PersistentVolumeClaimArgs {
             Metadata = K8s.ObjectMeta(ns, name, labels),
-            Spec = PvcSpec(requestSize, storageClass ?? StorageClass.LocalPath),
+            Spec = PersistentVolumeClaimSpec(requestSize, storageClass ?? StorageClass.LocalPath),
         };
-    }
-
-    public static VolumeArgs PvcVolume(string name, string claimName, bool readOnly = false) {
-        var source = new PersistentVolumeClaimVolumeSourceArgs {
-            ClaimName = claimName,
-            ReadOnly = readOnly,
-        };
-        return new VolumeArgs {
-            Name = name,
-            PersistentVolumeClaim = source,
-        };
-    }
-}
-
-public static class PersistentVolumeClaimArgsExtension {
-    public static PersistentVolumeClaim Apply(this PersistentVolumeClaimArgs args, string name) {
-        return new PersistentVolumeClaim(name, args);
     }
 }

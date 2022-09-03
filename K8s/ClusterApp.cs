@@ -9,42 +9,44 @@ using Ingress = global::Pulumi.Kubernetes.Networking.V1.Ingress;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public abstract class ClusterApp : BaseApp {
-    public readonly Service Service;
-    public readonly Output<string> IP;
+    public Service? Service { get; private set; }
+    public Output<string>? IP { get; private set; }
 
     protected ClusterApp(
-        Namespace ns, string name,
-        string portName, int portNumber
+        Namespace ns, string name
     ) : base(ns, name) {
-        Service = K8s.Service(ns, name, Labels, new[] {
+    }
+
+    protected void SetupService(
+        string portName, int portNumber
+    ) {
+        Service = K8s.Service(Namespace, Name, Labels, new[] {
             K8s.ServicePort(portName, portNumber, portNumber),
-        }).Apply(name);
+        }).Apply(Name);
         IP = Service.ClusterIP();
     }
 
-    protected ClusterApp(
-        Namespace ns, string name,
+    protected void SetupService(
         string portName1, int portNumber1,
         string portName2, int portNumber2
-    ) : base(ns, name) {
-        Service = K8s.Service(ns, name, Labels, new[] {
+    ) {
+        Service = K8s.Service(Namespace, Name, Labels, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),
-        }).Apply(name);
+        }).Apply(Name);
         IP = Service.ClusterIP();
     }
 
-    protected ClusterApp(
-        Namespace ns, string name,
+    protected void SetupService(
         string portName1, int portNumber1,
         string portName2, int portNumber2,
         string portName3, int portNumber3
-    ) : base(ns, name) {
-        Service = K8s.Service(ns, name, Labels, new[] {
+    ) {
+        Service = K8s.Service(Namespace, Name, Labels, new[] {
             K8s.ServicePort(portName1, portNumber1, portNumber1),
             K8s.ServicePort(portName2, portNumber2, portNumber2),
             K8s.ServicePort(portName3, portNumber3, portNumber3),
-        }).Apply(name);
+        }).Apply(Name);
         IP = Service.ClusterIP();
     }
 
