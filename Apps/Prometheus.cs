@@ -1,5 +1,6 @@
 namespace Edger.Pulumi.Apps;
 
+using System.Text;
 using Edger.Pulumi;
 using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
@@ -20,7 +21,33 @@ public class Prometheus : StatefulApp {
         return "prom/prometheus:" + version;
     }
 
-    protected static InputList<VolumeArgs> GetVolumes(
+    public static void AppendScrapeConfig(StringBuilder sb, string job_name, string job_text) {
+        sb.Append($"  - job_name: '{job_name}'");
+        foreach (var line in job_text) {
+            sb.Append($"    {line}");
+        }
+    }
+
+    public static string Config(
+        int interval_seconds,
+        params (string, string)[] scrape_configs
+    ) {
+        var sb = new StringBuilder();
+        sb.Append("global:");
+        sb.Append($"  scrape_interval: {interval_seconds}s");
+        sb.Append($"  evaluation_interval: {interval_seconds}s");
+        sb.Append("scrape_configs:");
+        AppendScrapeConfig(sb, "prometheus", @"
+static_configs:
+  - targets: ['localhost:9090']
+            ");
+        foreach (var scrape in scrape_configs) {
+            AppendScrapeConfig(sb, scrape.Item1, scrape.Item2);
+        }
+        return sb.ToString();
+    }
+
+    private static InputList<VolumeArgs> GetVolumes(
         Namespace ns, string config
     ) {
         var configData = new InputMap<string> {
