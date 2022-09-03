@@ -22,7 +22,7 @@ public class StatefulApp : ClusterApp {
         string mountName,
         string mountPath
     ) => new InputList<VolumeMountArgs> {
-        K8s.ContainerVolume(mountName, mountPath)
+        K8s.ContainerVolume(mountName, mountPath),
     };
 
     protected static InputList<VolumeMountArgs> GetVolumeMounts(
@@ -32,7 +32,20 @@ public class StatefulApp : ClusterApp {
         string mountPath2
     ) => new InputList<VolumeMountArgs> {
         K8s.ContainerVolume(mountName1, mountPath1),
-        K8s.ContainerVolume(mountName2, mountPath2)
+        K8s.ContainerVolume(mountName2, mountPath2),
+    };
+
+    protected static InputList<VolumeMountArgs> GetVolumeMounts(
+        string mountName1,
+        string mountPath1,
+        string mountName2,
+        string mountPath2,
+        string mountName3,
+        string mountPath3
+    ) => new InputList<VolumeMountArgs> {
+        K8s.ContainerVolume(mountName1, mountPath1),
+        K8s.ContainerVolume(mountName2, mountPath2),
+        K8s.ContainerVolume(mountName3, mountPath3),
     };
 
     public StatefulApp(

@@ -20,6 +20,13 @@ public class Prometheus : StatefulApp {
         return "prom/prometheus:" + version;
     }
 
+    public static string MetricsTarget(string address) {
+        return $@"
+static_configs:
+  - targets: ['{address}']
+";
+    }
+
     public static void AppendScrapeConfig(StringBuilder sb, string job_name, string job_text) {
         sb.AppendLine($"  - job_name: '{job_name}'");
         foreach (var line in job_text.Split("\n")) {
@@ -28,18 +35,15 @@ public class Prometheus : StatefulApp {
     }
 
     public static string Config(
-        int interval_seconds,
+        int intervalSeconds,
         params (string, string)[] scrape_configs
     ) {
         var sb = new StringBuilder();
         sb.AppendLine("global:");
-        sb.AppendLine($"  scrape_interval: {interval_seconds}s");
-        sb.AppendLine($"  evaluation_interval: {interval_seconds}s");
+        sb.AppendLine($"  scrape_interval: {intervalSeconds}s");
+        sb.AppendLine($"  evaluation_interval: {intervalSeconds}s");
         sb.AppendLine("scrape_configs:");
-        AppendScrapeConfig(sb, "prometheus", @"
-static_configs:
-  - targets: ['localhost:9090']
-            ");
+        AppendScrapeConfig(sb, "prometheus", MetricsTarget("localhost:9090"));
         foreach (var scrape in scrape_configs) {
             AppendScrapeConfig(sb, scrape.Item1, scrape.Item2);
         }
