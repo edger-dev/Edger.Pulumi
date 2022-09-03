@@ -17,88 +17,37 @@ public partial class K8s {
     public static EnvVarArgs[] ContainerEnv(params (string, string)[] args) =>
         args.Select(kv => ContainerEnvVar(kv.Item1, kv.Item2)).ToArray();
 
+    public static VolumeMountArgs ContainerVolume(string name, string mountPath) => new VolumeMountArgs {
+        Name = name,
+        MountPath = mountPath,
+    };
+
     public static ContainerArgs Container(
         string name, string image,
         ContainerPortArgs[] ports,
         EnvVarArgs[]? env = null,
-        InputList<string>? args = null, InputList<string>? command = null
+        InputList<string>? args = null,
+        InputList<string>? command = null,
+        InputList<VolumeMountArgs>? volumeMounts = null
     ) {
+        var container = new ContainerArgs {
+            Name = name,
+            Image = image,
+            Ports = ports,
+        };
         if (env != null) {
-            if (args != null) {
-                if (command != null) {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Env = env,
-                        Args = args,
-                        Command = command,
-                    };
-
-                } else {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Env = env,
-                        Args = args,
-                    };
-                }
-            } else {
-                if (command != null) {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Env = env,
-                        Command = command,
-                    };
-
-                } else {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Env = env,
-                    };
-                }
-            }
-        } else {
-            if (args != null) {
-                if (command != null) {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Args = args,
-                        Command = command,
-                    };
-                } else {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Args = args,
-                    };
-                }
-
-            } else {
-                if (command != null) {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                        Command = command,
-                    };
-                } else {
-                    return new ContainerArgs {
-                        Name = name,
-                        Image = image,
-                        Ports = ports,
-                    };
-                }
-            }
+            container.Env = env;
         }
+        if (args != null) {
+            container.Args = args;
+        }
+        if (command != null) {
+            container.Command = command;
+        }
+        if (volumeMounts != null) {
+            container.VolumeMounts = volumeMounts;
+        }
+        return container;
     }
 
     public static ContainerArgs Container(string name, string image, int[] ports, EnvVarArgs[]? env = null) {

@@ -75,10 +75,7 @@ public partial class K8s {
     };
 
     public static IngressArgs Ingress(Namespace ns, string name, IngressSpecArgs spec, InputMap<string>? annotations = null) {
-        var metadata = new ObjectMetaArgs {
-            Namespace = ns.Value,
-            Name = name,
-        };
+        var metadata = K8s.ObjectMeta(ns, name);
         if (annotations != null) {
             metadata.Annotations = annotations;
         }

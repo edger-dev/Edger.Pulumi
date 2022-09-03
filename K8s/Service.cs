@@ -4,7 +4,6 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 using global::Pulumi.Kubernetes.Types.Inputs.Meta.V1;
 
-using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 using Service = global::Pulumi.Kubernetes.Core.V1.Service;
 
 public enum ServiceType {
@@ -22,28 +21,24 @@ public partial class K8s {
     };
 
     public static ServiceSpecArgs ServiceSpec(
-        Deployment deployment,
+        InputMap<string> labels,
         ServicePortArgs[] ports,
         ServiceType serviceType = ServiceType.ClusterIP
     ) => new ServiceSpecArgs {
         Type = serviceType.ToString(),
         Ports = ports,
-        Selector = deployment.Spec.Apply(s => s.Template.Metadata.Labels),
+        Selector = labels,
     };
 
     public static ServiceArgs Service(
-        string name,
-        Deployment deployment,
+        Namespace ns, string name,
+        InputMap<string> labels,
         ServicePortArgs[] ports,
         ServiceType serviceType = ServiceType.ClusterIP
     ) {
         return new ServiceArgs {
-            Metadata = new ObjectMetaArgs {
-                Namespace = deployment.Metadata.Apply(m => m.Namespace),
-                Name = name,
-                Labels = deployment.Metadata.Apply(m => m.Labels),
-            },
-            Spec = ServiceSpec(deployment, ports, serviceType),
+            Metadata = K8s.ObjectMeta(ns, name, labels),
+            Spec = ServiceSpec(labels, ports, serviceType),
         };
     }
 }

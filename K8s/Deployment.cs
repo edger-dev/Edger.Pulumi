@@ -11,30 +11,33 @@ using Deployment = global::Pulumi.Kubernetes.Apps.V1.Deployment;
 public partial class K8s {
     public static DeploymentSpecArgs DeploymentSpec(
         Namespace ns, string name,
+        InputMap<string> labels,
         ContainerArgs container,
-        InputMap<string>? annotations = null,
+        InputList<VolumeArgs>? podVolumes = null,
+        InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) {
-        var labels = AppLabels(name);
         return new DeploymentSpecArgs {
             Selector = new LabelSelectorArgs {
                 MatchLabels = labels,
             },
             Replicas = replicas,
-            Template = PodTemplateSpec(ns, labels, container, annotations),
+            Template = PodTemplateSpec(ns, labels, container, podVolumes, podAnnotations),
         };
     }
 
     public static DeploymentArgs Deployment(
         Namespace ns, string name,
+        InputMap<string> labels,
         ContainerArgs container,
-        InputMap<string>? annotations = null,
+        InputList<VolumeArgs>? podVolumes = null,
+        InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) {
-        var metadata = AppMeta(ns, name);
+        var metadata = K8s.ObjectMeta(ns, name, labels);
         return new DeploymentArgs {
             Metadata = metadata,
-            Spec = DeploymentSpec(ns, name, container, annotations, replicas),
+            Spec = DeploymentSpec(ns, name, labels, container, podVolumes, podAnnotations, replicas),
         };
     }
 }
