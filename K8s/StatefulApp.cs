@@ -11,6 +11,38 @@ using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 public class StatefulApp : ClusterApp {
     public readonly StatefulSet StatefulSet;
 
+    protected static InputList<PersistentVolumeClaimArgs> GetPvcs(Namespace ns,
+        string pvcName,
+        string requestSize,
+        StorageClass? storageClass = null
+    ) => new InputList<PersistentVolumeClaimArgs> {
+        K8s.Pvc(ns, pvcName, requestSize:requestSize, storageClass:storageClass)
+    };
+
+    protected static InputList<VolumeArgs> GetVolumes(
+        string mountName,
+        string pvcName
+    ) => new InputList<VolumeArgs> {
+        K8s.PvcVolume(mountName, pvcName)
+    };
+
+    protected static InputList<VolumeMountArgs> GetVolumeMounts(
+        string mountName,
+        string mountPath
+    ) => new InputList<VolumeMountArgs> {
+        K8s.ContainerVolume(mountName, mountPath)
+    };
+
+    protected static InputList<VolumeMountArgs> GetVolumeMounts(
+        string mountName1,
+        string mountPath1,
+        string mountName2,
+        string mountPath2
+    ) => new InputList<VolumeMountArgs> {
+        K8s.ContainerVolume(mountName1, mountPath1),
+        K8s.ContainerVolume(mountName2, mountPath2)
+    };
+
     public StatefulApp(
         Namespace ns, string name,
         string portName, int portNumber,

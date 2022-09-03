@@ -20,22 +20,6 @@ public class MariaDB : StatefulApp {
         return "mariadb:" + version;
     }
 
-    private static InputList<PersistentVolumeClaimArgs> GetPvcs(Namespace ns,
-        string requestSize,
-        StorageClass? storageClass = null
-    ) => new InputList<PersistentVolumeClaimArgs> {
-        K8s.Pvc(ns, PvcName, requestSize:requestSize, storageClass:storageClass)
-    };
-
-    private static InputList<VolumeArgs> GetVolumes() => new InputList<VolumeArgs> {
-        K8s.PvcVolume(MountName, PvcName)
-    };
-
-    private static InputList<VolumeMountArgs> GetVolumeMounts() => new InputList<VolumeMountArgs> {
-        K8s.ContainerVolume(MountName, MountPath)
-    };
-
-
     public MariaDB(Namespace ns,
         string image,
         string rootPassword,
@@ -45,13 +29,12 @@ public class MariaDB : StatefulApp {
         string requestSize = "10Gi",
         StorageClass? storageClass = null
     ) : base(ns, Name, "db", Port,
-        image, GetPvcs(ns, requestSize, storageClass), GetVolumes(), GetVolumeMounts(),
+        image, GetPvcs(ns, PvcName, requestSize, storageClass), GetVolumes(MountName, PvcName), GetVolumeMounts(MountName, MountPath),
         env: K8s.ContainerEnv(
             ("MYSQL_ROOT_PASSWORD", rootPassword),
             ("MYSQL_USER", user),
             ("MYSQL_PASSWORD", password)
         ), args: new InputList<string> {
-            "mysqld",
             "--disable_log_bin",
             "--max_allowed_packet=512000000",
             "--max_connections=1024"

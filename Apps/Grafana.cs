@@ -1,13 +1,23 @@
+namespace Edger.Pulumi.Apps;
+
 using Edger.Pulumi;
 
-public class Grafana : ClusterApp {
+public class Grafana : StatefulApp {
     public new const string Name = "grafana";
-    public const string Image = "grafana/grafana:9.1.0-ubuntu";
     public const int Port = 3000;
 
-    public const string IngressHost = "grafana.bigd.local";
+    public static string Image(string version = "9.1.0-ubuntu") {
+        return "grafana/grafana:" + version;
+    }
 
-    public Grafana(Namespace ns) : base(ns, Name, Image, "ui", Port) {
-        var ingress = ApplyHostIngress(IngressHost, Port);
+    public Grafana(Namespace ns,
+        string? ingressHost = null,
+        string requestSize = "10Gi",
+        StorageClass? storageClass = null
+    ) : base(ns, Name, "ui", Port,
+    ) {
+        if (ingressHost != null) {
+            ApplyHostIngress(ingressHost, Port);
+        }
     }
 }
