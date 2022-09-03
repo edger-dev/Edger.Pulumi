@@ -42,7 +42,7 @@ public partial class K8s {
             StorageClassName = storageClass.ToStorageClassName(),
             Resources = new ResourceRequirementsArgs {
                 Requests = new InputMap<string> {
-                    { "Size", requestSize }
+                    { "storage", requestSize }
                 }
             }
         };

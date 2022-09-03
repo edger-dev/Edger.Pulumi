@@ -53,7 +53,7 @@ static_configs:
         var configData = new InputMap<string> {
             { "prometheus.yaml", config }
         };
-        var configMap = K8s.ConfigMap(ns, ConfigMapName, configData);
+        var configMap = K8s.ConfigMap(ns, ConfigMapName, configData).Apply(ConfigMapName);
         return new InputList<VolumeArgs> {
             K8s.PvcVolume(MountName, PvcName),
             K8s.ConfigMapVolume(ConfigMountName, ConfigMapName)

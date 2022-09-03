@@ -21,7 +21,10 @@ public class Grafana : StatefulApp {
         string requestSize = "10Gi",
         StorageClass? storageClass = null
     ) : base(ns, Name, "ui", Port,
-        image, GetPvcs(ns, PvcName, requestSize, storageClass), GetVolumes(MountName, PvcName), GetVolumeMounts(MountName, MountPath)
+        image,
+        GetPvcs(ns, PvcName, requestSize, storageClass),
+        GetVolumes(MountName, PvcName),
+        GetVolumeMounts(MountName, MountPath)
     ) {
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);

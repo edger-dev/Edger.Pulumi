@@ -21,6 +21,7 @@ public partial class K8s {
         int replicas = 1
     ) {
         return new StatefulSetSpecArgs {
+            ServiceName = name,
             Selector = new LabelSelectorArgs {
                 MatchLabels = labels,
             },

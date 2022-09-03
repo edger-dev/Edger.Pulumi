@@ -13,6 +13,7 @@ public partial class K8s {
         Namespace ns, string name,
         InputMap<string> labels,
         ContainerArgs container,
+        InputList<VolumeArgs>? podVolumes = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) {
@@ -21,7 +22,7 @@ public partial class K8s {
                 MatchLabels = labels,
             },
             Replicas = replicas,
-            Template = PodTemplateSpec(ns, labels, container, podAnnotations),
+            Template = PodTemplateSpec(ns, labels, container, podVolumes, podAnnotations),
         };
     }
 
@@ -29,13 +30,14 @@ public partial class K8s {
         Namespace ns, string name,
         InputMap<string> labels,
         ContainerArgs container,
+        InputList<VolumeArgs>? podVolumes = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) {
         var metadata = K8s.ObjectMeta(ns, name, labels);
         return new DeploymentArgs {
             Metadata = metadata,
-            Spec = DeploymentSpec(ns, name, labels, container, podAnnotations, replicas),
+            Spec = DeploymentSpec(ns, name, labels, container, podVolumes, podAnnotations, replicas),
         };
     }
 }
