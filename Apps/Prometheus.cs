@@ -67,7 +67,7 @@ static_configs:
         string? ingressHost = null
     ) : base(ns, Name, "api", Port,
         image,
-        GetClaims(pvc),
+        GetPvcTemplates(pvc),
         GetVolumeMounts(MountName, MountPath, ConfigMountName, ConfigMountPath),
         GetVolumes(ns, config),
         args: new InputList<string> {

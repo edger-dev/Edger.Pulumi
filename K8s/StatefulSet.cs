@@ -35,7 +35,7 @@ public partial class K8s {
         Namespace ns, string name,
         InputMap<string> labels,
         ContainerArgs container,
-        InputList<PersistentVolumeClaimArgs> pvcs,
+        InputList<PersistentVolumeClaimArgs> pvcTemplates,
         InputList<VolumeArgs>? podVolumes,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
@@ -43,7 +43,7 @@ public partial class K8s {
         var metadata = K8s.ObjectMeta(ns, name, labels);
         return new StatefulSetArgs {
             Metadata = metadata,
-            Spec = StatefulSetSpec(ns, name, labels, container, pvcs, podVolumes, podAnnotations, replicas),
+            Spec = StatefulSetSpec(ns, name, labels, container, pvcTemplates, podVolumes, podAnnotations, replicas),
         };
     }
 }

@@ -27,7 +27,7 @@ public class MariaDB : StatefulApp {
         string password,
         int? lbPort = null
     ) : base(ns, Name, "db", Port,
-        image, GetClaims(pvc), GetVolumeMounts(PvcName, MountPath),
+        image, GetPvcTemplates(pvc), GetVolumeMounts(PvcName, MountPath),
         env: K8s.ContainerEnv(
             ("MYSQL_ROOT_PASSWORD", rootPassword),
             ("MYSQL_USER", user),

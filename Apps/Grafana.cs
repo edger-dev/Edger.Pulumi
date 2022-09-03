@@ -21,7 +21,7 @@ public class Grafana : StatefulApp {
         string? ingressHost = null
     ) : base(ns, Name, "ui", Port,
         image,
-        GetClaims(pvc),
+        GetPvcTemplates(pvc),
         GetVolumeMounts(PvcName, MountPath)
     ) {
         if (ingressHost != null) {
