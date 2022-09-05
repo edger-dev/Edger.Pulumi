@@ -26,6 +26,17 @@ static_configs:
   - targets: ['{address}']
 ";
     }
+    public static string MetricsTarget(string address, string metrics_path = "/metrics") {
+        return $@"
+metrics_path: {metrics_path}
+static_configs:
+  - targets: ['{address}']
+";
+    }
+
+    public static string SpringBootTarget(string address) {
+        return MetricsTarget(address, "/actuator/prometheus");
+    }
 
     public static void AppendScrapeConfig(StringBuilder sb, string job_name, string job_text) {
         sb.AppendLine($"  - job_name: '{job_name}'");
@@ -67,7 +78,8 @@ static_configs:
         string image,
         Pvc pvc,
         string config,
-        string? ingressHost = null
+        string? ingressHost = null,
+        string?logLevel = null
     ) : base(ns, Name, "api", Port,
         image,
         GetPvcTemplates(pvc),
@@ -76,6 +88,7 @@ static_configs:
         args: new InputList<string> {
             "--config.file=/etc/prometheus/prometheus.yaml",
             "--storage.tsdb.path=/data",
+            $"--log.level={logLevel ?? "info"}",
         }
     ) {
         if (ingressHost != null) {
