@@ -50,6 +50,21 @@ public abstract class ClusterApp : BaseApp {
         IP = Service.ClusterIP();
     }
 
+    protected void SetupService(
+        string portName1, int portNumber1,
+        string portName2, int portNumber2,
+        string portName3, int portNumber3,
+        string portName4, int portNumber4
+    ) {
+        Service = K8s.Service(Namespace, Name, Labels, new[] {
+            K8s.ServicePort(portName1, portNumber1, portNumber1),
+            K8s.ServicePort(portName2, portNumber2, portNumber2),
+            K8s.ServicePort(portName3, portNumber3, portNumber3),
+            K8s.ServicePort(portName4, portNumber4, portNumber4),
+        }).Apply(Name);
+        IP = Service.ClusterIP();
+    }
+
     public Service ApplyLoadBalancer(string lbName, int lbPort, int servicePort) {
         return K8s.Service(
             Namespace, lbName, Labels, new [] {
