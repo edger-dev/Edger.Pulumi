@@ -28,20 +28,6 @@ public static class StorageClassExtension {
     }
 }
 
-public class Pvc {
-    public readonly PersistentVolumeClaimArgs Args;
-
-    public Pvc(
-        Namespace ns,
-        string pvcName,
-        InputMap<string>? labels = null,
-        string requestSize = "10Gi",
-        StorageClass? storageClass = null
-    ) {
-        Args = K8s.PersistentVolumeClaim(ns, pvcName, labels, requestSize, storageClass);
-    }
-}
-
 public partial class K8s {
     public static PersistentVolumeClaimSpecArgs PersistentVolumeClaimSpec(
         string requestSize = "1Gi",

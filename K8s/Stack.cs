@@ -9,12 +9,17 @@ public class K8sStack : global::Pulumi.Stack {
         Namespace = new Namespace(ns);
     }
 
-    public Pvc Pvc(
+    public PvcTemplateVolume PvcTemplateVolume(
         string pvcName,
+        string mountPath,
         string requestSize = "10Gi",
         StorageClass? storageClass = null
     ) {
-        return new Pvc(Namespace, pvcName, requestSize:requestSize, storageClass:storageClass);
+        return new PvcTemplateVolume(
+            Namespace, pvcName, mountPath,
+            requestSize:requestSize,
+            storageClass:storageClass
+        );
     }
 
     public static Task<int> RunAsync<T>()

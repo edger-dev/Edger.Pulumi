@@ -61,30 +61,29 @@ static_configs:
         return sb.ToString();
     }
 
-    private static InputList<VolumeArgs> GetVolumes(
+    private static Volume GetConfigVolume(
         Namespace ns,
         string config
     ) {
-        var configData = new InputMap<string> {
-            { "prometheus.yaml", config }
-        };
-        var configMap = K8s.ConfigMap(ns, ConfigMapName, configData, immutable:true);
-        return new InputList<VolumeArgs> {
-            K8s.ConfigMapVolume(ConfigMountName, configMap.Apply(ConfigMapName))
-        };
+        return new ConfigMapVolume(
+            ns, ConfigMapName,
+            ConfigMountPath, ConfigMountName,
+            ("prometheus.yaml", config)
+        );
     }
 
     public Prometheus(Namespace ns,
         string image,
-        Pvc pvc,
+        PvcTemplateVolume pvc,
         string config,
         string? ingressHost = null,
         string?logLevel = null
     ) : base(ns, Name, "api", Port,
         image,
-        GetPvcTemplates(pvc),
-        GetVolumeMounts(PvcName, MountPath, ConfigMountName, ConfigMountPath),
-        GetVolumes(ns, config),
+        new Volume[] {
+            pvc,
+            GetConfigVolume(ns, config),
+        },
         args: new InputList<string> {
             "--config.file=/etc/prometheus/prometheus.yaml",
             "--storage.tsdb.path=/data",
@@ -96,5 +95,3 @@ static_configs:
         }
     }
 }
-
-

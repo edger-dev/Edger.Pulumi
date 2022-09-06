@@ -17,7 +17,7 @@ public partial class K8s {
     public static EnvVarArgs[] ContainerEnv(params (string, string)[] args) =>
         args.Select(kv => ContainerEnvVar(kv.Item1, kv.Item2)).ToArray();
 
-    public static VolumeMountArgs ContainerVolume(string name, string mountPath) => new VolumeMountArgs {
+    public static VolumeMountArgs ContainerVolumeMount(string name, string mountPath) => new VolumeMountArgs {
         Name = name,
         MountPath = mountPath,
     };

@@ -16,10 +16,14 @@ public class Grafana : StatefulApp {
     public const string DatasourcesConfigMountName = "datasources";
     public const string DatasourcesConfigMountPath = "/etc/grafana/provisioning/datasources";
 
-
     public const string DashboardsConfigMapName = "grafana-dashboards";
     public const string DashboardsConfigMountName = "dashboards";
     public const string DashboardsConfigMountPath = "/etc/grafana/provisioning/dashboards";
+
+    // Put each dashboard into it's own ConfigMap, since k8s can't support big content in one ConfigMap.
+    public const string DashboardsConfigMapNamePrefix = "grafana-dashboards-";
+    public const string DashboardsConfigMountNamePrefix = "dashboards-";
+    public const string DashboardsConfigMountPathPrefix = "/etc/grafana/provisioning/dashboards/";
 
     public static string Image(string version = "9.1.0-ubuntu") {
         return "grafana/grafana:" + version;
@@ -65,44 +69,78 @@ providers:
 ";
     }
 
-    private static InputList<VolumeArgs> GetVolumes(
-        Namespace ns,
-        (string, string)[] datasources,
-        (string, string)[] dashboards
+    private static Volume GetDashboardsVolume(
+        Namespace ns
     ) {
-        var datasourcesData = new InputMap<string>();
-        foreach (var source in datasources) {
-            datasourcesData.Add(source.Item1, source.Item2);
-        }
-        var datasourcesConfigMap = K8s.ConfigMap(ns, DatasourcesConfigMapName, datasourcesData);
-
-        var dashboardsData = new InputMap<string>();
-        foreach (var dashboard in dashboards) {
-            dashboardsData.Add(dashboard.Item1, dashboard.Item2);
-        }
-        var dashboardsConfigMap = K8s.ConfigMap(ns, DashboardsConfigMapName, dashboardsData);
-
-        return new InputList<VolumeArgs> {
-            K8s.ConfigMapVolume(DatasourcesConfigMountName, datasourcesConfigMap.Apply(DatasourcesConfigMapName)),
-            K8s.ConfigMapVolume(DashboardsConfigMountName, dashboardsConfigMap.Apply(DashboardsConfigMapName))
-        };
+        return new ConfigMapVolume(
+            ns,
+            DashboardsConfigMapName,
+            DashboardsConfigMountPath,
+            DashboardsConfigMountName,
+            ("dashboards.yaml", DashboardFolder())
+        );
     }
 
+    private static Volume GetDatasourcesVolume(
+        Namespace ns,
+        (string, string)[] datasources
+    ) {
+        return new ConfigMapVolume(
+            ns,
+            DatasourcesConfigMapName,
+            DatasourcesConfigMountPath,
+            DatasourcesConfigMountName,
+            datasources
+        );
+    }
+
+    private static Volume GetDashboardVolume(
+        Namespace ns,
+        string folder,
+        string name,
+        string content
+    ) {
+        var filename = name;
+        if (!filename.EndsWith(".json")) {
+            filename = name + ".json";
+        }
+        return new ConfigMapVolume(
+            ns,
+            DashboardsConfigMapNamePrefix + folder,
+            DashboardsConfigMountPathPrefix + folder,
+            DashboardsConfigMountNamePrefix + folder,
+            ( filename, content)
+        );
+    }
+
+    private static Volume[] GetVolumes(
+        Namespace ns,
+        PvcTemplateVolume pvc,
+        (string, string)[] datasources,
+        (string, string, string)[] dashboards
+    ) {
+        var result = new List<Volume>();
+        result.Add(pvc);
+        result.Add(GetDatasourcesVolume(ns, datasources));
+        result.Add(GetDashboardsVolume(ns));
+        foreach (var dashboard in dashboards) {
+            result.Add(GetDashboardVolume(ns,
+                dashboard.Item1,
+                dashboard.Item2,
+                dashboard.Item3));
+        }
+        return result.ToArray();
+    }
 
     public Grafana(Namespace ns,
         string image,
-        Pvc pvc,
+        PvcTemplateVolume pvc,
         (string, string)[] datasources,
-        (string, string)[] dashboards,
+        (string, string, string)[] dashboards,
         string? ingressHost = null
     ) : base(ns, Name, "ui", Port,
         image,
-        GetPvcTemplates(pvc),
-        GetVolumeMounts(PvcName, MountPath,
-            DatasourcesConfigMountName, DatasourcesConfigMountPath,
-            DashboardsConfigMountName, DashboardsConfigMountPath
-        ),
-        GetVolumes(ns, datasources, dashboards)
+        GetVolumes(ns, pvc, datasources, dashboards)
     ) {
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);

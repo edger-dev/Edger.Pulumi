@@ -17,12 +17,13 @@ public class Registry : StatefulApp {
     public readonly Output<string>? LoadBalancerIP;
 
     public Registry(Namespace ns,
-        Pvc pvc,
+        PvcTemplateVolume pvc,
         string? ingressHost = null,
         int? lbPort = null
     ) : base(ns, Name, "api", Port, Image,
-        GetPvcTemplates(pvc),
-        GetVolumeMounts(PvcName, MountPath)
+        new Volume[] {
+            pvc,
+        }
     ) {
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);
