@@ -7,7 +7,7 @@ using global::Pulumi.Kubernetes.Types.Inputs.Rbac.V1;
 using ClusterRoleBinding = global::Pulumi.Kubernetes.Rbac.V1.ClusterRoleBinding;
 
 public class Linkerd {
-    public const string Namepace__Linkerd_Viz = "linkerd_viz";
+    public const string Namepace__Linkerd_Viz = "linkerd-viz";
     public const string ClusterRole__Linkerd_Viz_Prometheus = "linkerd-linkerd-viz-prometheus";
 
     public static InputMap<string> InjectAnnotations {
