@@ -16,11 +16,21 @@ public class Registry : StatefulApp {
 
     public readonly Output<string>? LoadBalancerIP;
 
+    public static PvcTemplateVolume Volume(
+        Namespace ns,
+        string requestSize,
+        InputMap<string>? labels = null,
+        StorageClass? storageClass = null
+    ) {
+        return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
+    }
+
     public Registry(Namespace ns,
         PvcTemplateVolume pvc,
         string? ingressHost = null,
-        int? lbPort = null
-    ) : base(ns, Name, "api", Port, Image,
+        int? lbPort = null,
+        string name = Name
+    ) : base(ns, name, "api", Port, Image,
         new Volume[] {
             pvc,
         }

@@ -77,8 +77,8 @@ public class PvcTemplateVolume : Volume {
     public PvcTemplateVolume(
         Namespace ns, string name,
         string mountPath,
+        string requestSize,
         InputMap<string>? labels = null,
-        string requestSize = "10Gi",
         StorageClass? storageClass = null
     ) : base(ns, name, mountPath, name) {
         Pvc = K8s.PersistentVolumeClaim(ns, name, labels, requestSize, storageClass);

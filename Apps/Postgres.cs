@@ -15,25 +15,35 @@ public class Postgres : StatefulApp {
 
     public readonly Output<string>? LoadBalancerIP;
 
-    public static string Image(string version) {
+    public static string Image(string version = "15.2") {
         return "postgres:" + version;
+    }
+
+    public static PvcTemplateVolume Volume(
+        Namespace ns,
+        string requestSize,
+        InputMap<string>? labels = null,
+        StorageClass? storageClass = null
+    ) {
+        return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
     }
 
     public Postgres(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
-        string user,
         string password,
+        string user,
         string db,
-        int? lbPort = null
-    ) : base(ns, Name, "db", Port,
+        int? lbPort = null,
+        string name = Name
+    ) : base(ns, name, "db", Port,
         image,
         new Volume[] {
             pvc
         },
         env: K8s.ContainerEnv(
-            ("POSTGRES_USER", user),
             ("POSTGRES_PASSWORD", password),
+            ("POSTGRES_USER", user),
             ("POSTGRES_DB", db)
         ), args: new InputList<string> {
             " -c max_connections=1024",

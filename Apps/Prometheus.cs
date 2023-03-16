@@ -13,11 +13,20 @@ public class Prometheus : StatefulApp {
     public const string MountPath = "/data";
 
     public const string ConfigMapName = "prometheus-config";
-    public const string ConfigMountName = "config";
     public const string ConfigMountPath = "/etc/prometheus";
+    public const string ConfigMountName = "config";
 
     public static string Image(string version = "v2.38.0") {
         return "prom/prometheus:" + version;
+    }
+
+    public static PvcTemplateVolume Volume(
+        Namespace ns,
+        string requestSize,
+        InputMap<string>? labels = null,
+        StorageClass? storageClass = null
+    ) {
+        return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
     }
 
     public static string MetricsTarget(string address) {
@@ -77,8 +86,9 @@ static_configs:
         PvcTemplateVolume pvc,
         string config,
         string? ingressHost = null,
-        string?logLevel = null
-    ) : base(ns, Name, "api", Port,
+        string?logLevel = null,
+        string name = Name
+    ) : base(ns, name, "api", Port,
         image,
         new Volume[] {
             pvc,

@@ -29,6 +29,15 @@ public class Grafana : StatefulApp {
         return "grafana/grafana:" + version;
     }
 
+    public static PvcTemplateVolume Volume(
+        Namespace ns,
+        string requestSize,
+        InputMap<string>? labels = null,
+        StorageClass? storageClass = null
+    ) {
+        return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
+    }
+
     public static string PrometheusDatasource(
         string name = "Prometheus",
         string uid = "prometheus",
@@ -137,8 +146,9 @@ providers:
         PvcTemplateVolume pvc,
         (string, string)[] datasources,
         (string, string, string)[] dashboards,
-        string? ingressHost = null
-    ) : base(ns, Name, "ui", Port,
+        string? ingressHost = null,
+        string name = Name
+    ) : base(ns, name, "ui", Port,
         image,
         GetVolumes(ns, pvc, datasources, dashboards)
     ) {

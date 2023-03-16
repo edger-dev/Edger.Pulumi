@@ -18,8 +18,9 @@ public class Redis : StatelessApp {
     public Redis(Namespace ns,
         string image,
         string password,
-        int? lbPort = null
-    ) : base(ns, Name, "api", Port, image,
+        int? lbPort = null,
+        string name = Name
+    ) : base(ns, name, "api", Port, image,
         K8s.ContainerEnv(
             ("REDIS_PASSWORD", password)
         )

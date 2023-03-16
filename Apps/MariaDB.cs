@@ -19,14 +19,24 @@ public class MariaDB : StatefulApp {
         return "mariadb:" + version;
     }
 
+    public static PvcTemplateVolume Volume(
+        Namespace ns,
+        string requestSize,
+        InputMap<string>? labels = null,
+        StorageClass? storageClass = null
+    ) {
+        return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
+    }
+
     public MariaDB(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
         string rootPassword,
         string user,
         string password,
-        int? lbPort = null
-    ) : base(ns, Name, "db", Port,
+        int? lbPort = null,
+        string name = Name
+    ) : base(ns, name, "db", Port,
         image,
         new Volume[] {
             pvc
