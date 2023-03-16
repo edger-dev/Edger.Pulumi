@@ -12,7 +12,6 @@ public enum IngressPathType {
     Exact,
 }
 
-
 public partial class K8s {
     public static ServiceBackendPortArgs ServiceBackendPort(string portName) => new ServiceBackendPortArgs {
         Name = portName,
