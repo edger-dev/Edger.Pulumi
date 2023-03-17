@@ -14,18 +14,41 @@ public class StatefulApp : ClusterApp {
 
     public StatefulApp(
         Namespace ns, string name,
+        string image,
+        Volume[] volumes,
+        EnvVarArgs[]? env = null,
+        InputList<string>? args = null,
+        InputList<string>? command = null,
+        Input<SecurityContextArgs>? securityContext = null,
+        InputMap<string>? podAnnotations = null,
+        int replicas = 1
+    ) : base (ns, name) {
+        var container = K8s.Container(name, image, new ContainerPortArgs[] {
+        }, env, args, command, securityContext, Volume.ToVolumeMounts(volumes));
+        StatefulSet = K8s.StatefulSet(
+            ns, name, Labels, container,
+            Volume.FilterPvcTemplates(volumes),
+            Volume.FilterVolumes(volumes),
+            podAnnotations:podAnnotations,
+            replicas:replicas
+        ).Apply(name);
+    }
+
+    public StatefulApp(
+        Namespace ns, string name,
         string portName, int portNumber,
         string image,
         Volume[] volumes,
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
         InputList<string>? command = null,
+        Input<SecurityContextArgs>? securityContext = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) : base (ns, name) {
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber)
-        }, env, args, command, Volume.ToVolumeMounts(volumes));
+        }, env, args, command, securityContext, Volume.ToVolumeMounts(volumes));
         StatefulSet = K8s.StatefulSet(
             ns, name, Labels, container,
             Volume.FilterPvcTemplates(volumes),
@@ -45,13 +68,14 @@ public class StatefulApp : ClusterApp {
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
         InputList<string>? command = null,
+        Input<SecurityContextArgs>? securityContext = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) : base (ns, name) {
         var container = K8s.Container(name, image, new[] {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
-        }, env, args, command, Volume.ToVolumeMounts(volumes));
+        }, env, args, command, securityContext, Volume.ToVolumeMounts(volumes));
         StatefulSet = K8s.StatefulSet(
             ns, name, Labels, container,
             Volume.FilterPvcTemplates(volumes),
@@ -72,6 +96,7 @@ public class StatefulApp : ClusterApp {
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
         InputList<string>? command = null,
+        Input<SecurityContextArgs>? securityContext = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) : base (ns, name) {
@@ -79,7 +104,7 @@ public class StatefulApp : ClusterApp {
             K8s.ContainerPort(portNumber1),
             K8s.ContainerPort(portNumber2),
             K8s.ContainerPort(portNumber3),
-        }, env, args, command, Volume.ToVolumeMounts(volumes));
+        }, env, args, command, securityContext, Volume.ToVolumeMounts(volumes));
         StatefulSet = K8s.StatefulSet(
             ns, name, Labels, container,
             Volume.FilterPvcTemplates(volumes),
@@ -100,6 +125,7 @@ public class StatefulApp : ClusterApp {
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
         InputList<string>? command = null,
+        Input<SecurityContextArgs>? securityContext = null,
         InputMap<string>? podAnnotations = null,
         int replicas = 1
     ) : base (ns, name) {
@@ -108,7 +134,7 @@ public class StatefulApp : ClusterApp {
             K8s.ContainerPort(portNumber2),
             K8s.ContainerPort(portNumber3),
             K8s.ContainerPort(portNumber4),
-        }, env, args, command, Volume.ToVolumeMounts(volumes));
+        }, env, args, command, securityContext, Volume.ToVolumeMounts(volumes));
         StatefulSet = K8s.StatefulSet(
             ns, name, Labels, container,
             Volume.FilterPvcTemplates(volumes),

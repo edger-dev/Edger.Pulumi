@@ -28,8 +28,8 @@ public partial class K8s {
         EnvVarArgs[]? env = null,
         InputList<string>? args = null,
         InputList<string>? command = null,
-        InputList<VolumeMountArgs>? volumeMounts = null,
-        Input<SecurityContextArgs>? securityContext = null
+        Input<SecurityContextArgs>? securityContext = null,
+        InputList<VolumeMountArgs>? volumeMounts = null
     ) {
         var container = new ContainerArgs {
             Name = name,
@@ -45,11 +45,11 @@ public partial class K8s {
         if (command != null) {
             container.Command = command;
         }
-        if (volumeMounts != null) {
-            container.VolumeMounts = volumeMounts;
-        }
         if (securityContext != null) {
             container.SecurityContext = securityContext;
+        }
+        if (volumeMounts != null) {
+            container.VolumeMounts = volumeMounts;
         }
         return container;
     }

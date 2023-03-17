@@ -8,6 +8,7 @@ using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 public class ConcourseWeb : StatefulApp {
     public new const string Name = "concourse-web";
     public const int Port = 8080;
+    public const int TsaPort = 2222;
 
     public const string KeysMapName = "concourse-web-keys";
     public const string KeysMountPath = "/concourse-keys";
@@ -17,9 +18,11 @@ public class ConcourseWeb : StatefulApp {
     public const string ConfigKey_tsa_host_key = "tsa_host_key";
     public const string ConfigKey_authorized_worker_keys = "authorized_worker_keys";
 
-    public const string LoadBalancerName = "concourse-external";
+    public const string LoadBalancerName = "concourse-web-external";
+    public const string TsaLoadBalancerName = "concourse-tsa-external";
 
     public readonly Output<string>? LoadBalancerIP;
+    public readonly Output<string>? TsaLoadBalancerIP;
 
     public static string Image(string version = "7.9.1") {
         return "concourse/concourse:" + version;
@@ -53,8 +56,9 @@ public class ConcourseWeb : StatefulApp {
         int dbPort = ConcourseDB.Port,
         string? ingressHost = null,
         int? lbPort = null,
+        int? tsaLbPort = null,
         string name = Name
-    ) : base(ns, name, "web", Port, image,
+    ) : base(ns, name, "web", Port, "tsa", TsaPort, image,
         new Volume[] {
             keys
         },
@@ -77,6 +81,10 @@ public class ConcourseWeb : StatefulApp {
         if (lbPort != null) {
             var lb = ApplyLoadBalancer(LoadBalancerName, lbPort.Value, Port);
             LoadBalancerIP = lb.LoadBalancerIP();
+        }
+        if (tsaLbPort != null) {
+            var tsaLb = ApplyLoadBalancer(TsaLoadBalancerName, tsaLbPort.Value, TsaPort);
+            TsaLoadBalancerIP = tsaLb.LoadBalancerIP();
         }
     }
 }
