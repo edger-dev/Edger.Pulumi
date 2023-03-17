@@ -45,9 +45,7 @@ public class Postgres : StatefulApp {
             ("POSTGRES_PASSWORD", password),
             ("POSTGRES_USER", user),
             ("POSTGRES_DB", db)
-        ), args: new InputList<string> {
-            " -c max_connections=1024",
-        }
+        )
     ) {
         if (lbPort != null) {
             var lb = ApplyLoadBalancer(LoadBalancerName, lbPort.Value, Port);

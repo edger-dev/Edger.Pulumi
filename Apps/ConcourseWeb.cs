@@ -58,7 +58,7 @@ public class ConcourseWeb : StatefulApp {
         new Volume[] {
             keys
         },
-        K8s.ContainerEnv(
+        env: K8s.ContainerEnv(
             ("CONCOURSE_EXTERNAL_URL", externalUrl),
             ("CONCOURSE_ADD_LOCAL_USER", $"{adminUser}:{adminPassword}"),
             ("CONCOURSE_MAIN_TEAM_LOCAL_USER", adminUser),
@@ -67,8 +67,9 @@ public class ConcourseWeb : StatefulApp {
             ("CONCOURSE_POSTGRES_PASSWORD", dbPassword),
             ("CONCOURSE_POSTGRES_USER", dbUser),
             ("CONCOURSE_POSTGRES_DATABASE", dbDatabase)
-        ),
-        command: "web"
+        ), args: new InputList<string> {
+            "web",
+        }
     ) {
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);
