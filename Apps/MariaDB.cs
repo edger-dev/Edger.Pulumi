@@ -15,7 +15,7 @@ public class MariaDB : StatefulApp {
 
     public readonly Output<string>? LoadBalancerIP;
 
-    public static string Image(string version) {
+    public static string Image(string version = "10.11") {
         return "mariadb:" + version;
     }
 

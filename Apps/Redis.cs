@@ -11,7 +11,7 @@ public class Redis : StatelessApp {
 
     public readonly Output<string>? LoadBalancerIP;
 
-    public static string Image(string version) {
+    public static string Image(string version = "7.0") {
         return "bitnami/redis:" + version;
     }
 
