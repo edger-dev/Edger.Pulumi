@@ -25,7 +25,7 @@ public class RegistryUI : StatelessApp {
         string name = Name
     ) : base(ns, name, "web", Port, image,
         env: K8s.ContainerEnv(
-            ("REGISTRY_URL", registryUrl),
+            ("NGINX_PROXY_PASS_URL", registryUrl),
             ("SINGLE_REGISTRY", singleRegistry ? "true" : "false")
         )
     ) {
