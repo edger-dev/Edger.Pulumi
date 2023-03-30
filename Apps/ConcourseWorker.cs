@@ -58,7 +58,8 @@ public class ConcourseWorker : StatefulApp {
         },
         env: K8s.ContainerEnv(
             ("CONCOURSE_WORK_DIR", workerDir),
-            ("CONCOURSE_TSA_HOST", $"{tsaHost}:{ConcourseWeb.TsaPort}")
+            ("CONCOURSE_TSA_HOST", $"{tsaHost}:{ConcourseWeb.TsaPort}"),
+            ("CONCOURSE_RUNTIME", "containerd")
         ), args: new InputList<string> {
             "worker",
         }, securityContext: K8s.SecurityContext(
