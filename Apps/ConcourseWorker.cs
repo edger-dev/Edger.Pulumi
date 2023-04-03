@@ -6,7 +6,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class ConcourseWorker : StatefulApp {
-    public new const string Name = "concourse-worker";
+    public const string NAME = "concourse-worker";
 
     public const string KeysMapName = "concourse-worker-keys";
     public const string KeysMountPath = "/concourse-keys";
@@ -48,9 +48,9 @@ public class ConcourseWorker : StatefulApp {
         string image,
         PvcTemplateVolume pvc,
         ConfigMapVolume keys,
-        string tsaHost = ConcourseWeb.Name,
+        string tsaHost = ConcourseWeb.NAME,
         string workerDir = MountPath,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, image,
         new Volume[] {
             pvc,

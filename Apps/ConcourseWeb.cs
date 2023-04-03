@@ -6,7 +6,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class ConcourseWeb : StatefulApp {
-    public new const string Name = "concourse-web";
+    public const string NAME = "concourse-web";
     public const int Port = 8080;
     public const int TsaPort = 2222;
 
@@ -50,14 +50,14 @@ public class ConcourseWeb : StatefulApp {
         string externalUrl,
         string adminPassword,
         string adminUser = "admin",
-        string dbUser = ConcourseDB.User,
-        string dbDatabase = ConcourseDB.Db,
-        string dbHost = ConcourseDB.Name,
+        string dbUser = ConcourseDB.USER,
+        string dbDatabase = ConcourseDB.DB,
+        string dbHost = ConcourseDB.NAME,
         int dbPort = ConcourseDB.Port,
         string? ingressHost = null,
         int? lbPort = null,
         int? tsaLbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "web", Port, "tsa", TsaPort, image,
         new Volume[] {
             keys
@@ -86,5 +86,22 @@ public class ConcourseWeb : StatefulApp {
             var tsaLb = ApplyLoadBalancer(TsaLoadBalancerName, tsaLbPort.Value, TsaPort);
             TsaLoadBalancerIP = tsaLb.LoadBalancerIP();
         }
+    }
+
+    public ConcourseWeb(Namespace ns,
+        string image,
+        ConfigMapVolume keys,
+        ConcourseDB db,
+        string externalUrl,
+        string adminPassword,
+        string adminUser = "admin",
+        string? ingressHost = null,
+        int? lbPort = null,
+        int? tsaLbPort = null,
+        string name = NAME
+    ) : this(ns, image, keys, db.Password,
+            externalUrl, adminPassword, adminUser,
+            db.User, db.Db, db.Name, ConcourseDB.Port,
+            ingressHost, lbPort, tsaLbPort, name) {
     }
 }

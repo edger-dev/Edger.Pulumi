@@ -6,7 +6,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class Grafana : StatefulApp {
-    public new const string Name = "grafana";
+    public const string NAME = "grafana";
     public const int Port = 3000;
 
     public const string PvcName = "grafana-data";
@@ -147,7 +147,7 @@ providers:
         (string, string)[] datasources,
         (string, string, string)[] dashboards,
         string? ingressHost = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "ui", Port,
         image,
         GetVolumes(ns, pvc, datasources, dashboards)

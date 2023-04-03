@@ -5,7 +5,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class RegistryUI : StatelessApp {
-    public new const string Name = "registry-ui";
+    public const string NAME = "registry-ui";
     public const int Port = 80;
 
     public const string LoadBalancerName = "registry-ui-external";
@@ -22,7 +22,7 @@ public class RegistryUI : StatelessApp {
         bool singleRegistry = true,
         string? ingressHost = null,
         int? lbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "web", Port, image,
         env: K8s.ContainerEnv(
             ("NGINX_PROXY_PASS_URL", registryUrl),

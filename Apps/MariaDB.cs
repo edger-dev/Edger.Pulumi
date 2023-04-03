@@ -5,7 +5,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class MariaDB : StatefulApp {
-    public new const string Name = "mariadb";
+    public const string NAME = "mariadb";
     public const int Port = 3306;
 
     public const string PvcName = "mariadb-data";
@@ -35,7 +35,7 @@ public class MariaDB : StatefulApp {
         string user,
         string password,
         int? lbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "db", Port,
         image,
         new Volume[] {

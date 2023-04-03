@@ -6,7 +6,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class Prometheus : StatefulApp {
-    public new const string Name = "prometheus";
+    public const string NAME = "prometheus";
     public const int Port = 9090;
 
     public const string PvcName = "prometheus-data";
@@ -87,7 +87,7 @@ static_configs:
         string config,
         string? ingressHost = null,
         string?logLevel = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "api", Port,
         image,
         new Volume[] {

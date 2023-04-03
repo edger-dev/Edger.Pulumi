@@ -5,7 +5,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class Postgres : StatefulApp {
-    public new const string Name = "postgres";
+    public const string NAME = "postgres";
     public const int Port = 5432;
 
     public const string PvcName = "postgres-data";
@@ -28,9 +28,9 @@ public class Postgres : StatefulApp {
         return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
     }
 
-    private readonly string Password;
-    private readonly string User;
-    private readonly string Db;
+    public readonly string Password;
+    public readonly string User;
+    public readonly string Db;
 
     public Postgres(Namespace ns,
         string image,
@@ -39,7 +39,7 @@ public class Postgres : StatefulApp {
         string user,
         string db,
         int? lbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "db", Port,
         image,
         new Volume[] {
@@ -60,10 +60,8 @@ public class Postgres : StatefulApp {
         }
     }
 
-    public string Url(
-        string name = Name
-    ) {
-        return $"postgresql://{User}:{Password}@{name}:{Port}/{Db}";
+    public string Url() {
+        return $"postgresql://{User}:{Password}@{Name}:{Port}/{Db}";
     }
 
 

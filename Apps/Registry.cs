@@ -5,7 +5,7 @@ using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
 public class Registry : StatefulApp {
-    public new const string Name = "registry";
+    public const string NAME = "registry";
     public const int Port = 5000;
 
     public const string PvcName = "registry-data";
@@ -33,7 +33,7 @@ public class Registry : StatefulApp {
         PvcTemplateVolume pvc,
         string? ingressHost = null,
         int? lbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "api", Port, image,
         new Volume[] {
             pvc,

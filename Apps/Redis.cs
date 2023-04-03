@@ -4,7 +4,7 @@ using Edger.Pulumi;
 using global::Pulumi;
 
 public class Redis : StatelessApp {
-    public new const string Name = "redis";
+    public const string NAME = "redis";
     public const int Port = 6379;
 
     public const string LoadBalancerName = "redis-external";
@@ -19,7 +19,7 @@ public class Redis : StatelessApp {
         string image,
         string password,
         int? lbPort = null,
-        string name = Name
+        string name = NAME
     ) : base(ns, name, "api", Port, image,
         K8s.ContainerEnv(
             ("REDIS_PASSWORD", password)

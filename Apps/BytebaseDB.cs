@@ -5,13 +5,13 @@ using Edger.Pulumi;
 using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
-public class ConcourseDB : Postgres {
-    public new const string NAME = "concourse-db";
+public class BytebaseDB : Postgres {
+    public new const string NAME = "bytebase-db";
 
-    public const string DB = "concourse";
-    public const string USER = "concourse";
+    public const string DB = "bytebase";
+    public const string USER = "bytebase";
 
-    public ConcourseDB(Namespace ns,
+    public BytebaseDB(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
         string password,
