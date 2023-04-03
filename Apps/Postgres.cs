@@ -28,6 +28,10 @@ public class Postgres : StatefulApp {
         return new PvcTemplateVolume(ns, PvcName, MountPath, requestSize, labels, storageClass);
     }
 
+    private readonly string Password;
+    private readonly string User;
+    private readonly string Db;
+
     public Postgres(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
@@ -47,9 +51,20 @@ public class Postgres : StatefulApp {
             ("POSTGRES_DB", db)
         )
     ) {
+        Password = password;
+        User = user;
+        Db = db;
         if (lbPort != null) {
             var lb = ApplyLoadBalancer(LoadBalancerName, lbPort.Value, Port);
             LoadBalancerIP = lb.LoadBalancerIP();
         }
     }
+
+    public string Url(
+        string name = Name
+    ) {
+        return $"postgresql://{User}:{Password}@{name}:{Port}/{Db}";
+    }
+
+
 }
