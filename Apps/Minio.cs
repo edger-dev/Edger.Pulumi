@@ -22,6 +22,9 @@ public class Minio : StatefulApp {
         return "quay.io/minio/minio:" + version;
     }
 
+    public readonly string AdminUser;
+    public readonly string AdminPassword;
+
     public static PvcTemplateVolume Volume(
         Namespace ns,
         string requestSize,
@@ -34,7 +37,8 @@ public class Minio : StatefulApp {
     public Minio(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
-        EnvVarArgs[] env,
+        string adminPassword,
+        string adminUser = "admin",
         string? ingressHost = null,
         int? lbPort = null,
         string? consoleIngressHost = null,
@@ -44,7 +48,10 @@ public class Minio : StatefulApp {
         new Volume[] {
             pvc,
         },
-        env: env,
+        env: K8s.ContainerEnv(
+            ("MINIO_ROOT_USER", adminUser),
+            ("MINIO_ROOT_PASSWORD", adminPassword)
+        ),
         args: new InputList<string> {
             "server",
             MountPath,
@@ -52,6 +59,8 @@ public class Minio : StatefulApp {
             $":{ConsolePort}",
         }
     ) {
+        AdminUser = adminUser;
+        AdminPassword = adminPassword;
         if (ingressHost != null) {
             ApplyHostIngress(ingressHost, Port);
         }
@@ -66,28 +75,5 @@ public class Minio : StatefulApp {
             var consoleLb = ApplyLoadBalancer(ConsoleLoadBalancerName, consoleLbPort.Value, ConsolePort);
             ConsoleLoadBalancerIP = consoleLb.LoadBalancerIP();
         }
-    }
-
-    public Minio(Namespace ns,
-        string image,
-        PvcTemplateVolume pvc,
-        string adminPassword,
-        string adminUser = "admin",
-        string? ingressHost = null,
-        int? lbPort = null,
-        string? consoleIngressHost = null,
-        int? consoleLbPort = null,
-        string name = NAME
-    ) : this(ns, image, pvc,
-        K8s.ContainerEnv(
-            ("MINIO_ROOT_USER", adminUser),
-            ("MINIO_ROOT_PASSWORD", adminPassword)
-        ),
-        ingressHost: ingressHost,
-        lbPort: lbPort,
-        consoleIngressHost: consoleIngressHost,
-        consoleLbPort: consoleLbPort,
-        name: name
-    ) {
     }
 }
