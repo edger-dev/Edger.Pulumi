@@ -11,28 +11,30 @@ public class Clash : StatefulApp {
     public const int HttpPort = 1102;
     public const int ControlPort = 1109;
 
-    public const string ConfigMapName = "clash-config";
-    public const string ConfigMountPath = "/etc/clash";
-    public const string ConfigMountName = "config";
-
     public const string LoadBalancerName = "clash-external";
     public const string HttpLoadBalancerName = "clash-http-external";
     public const string ControlLoadBalancerName = "clash-control-external";
+
+    public const string ConfigMapName = "clash-config";
+    public const string ConfigMountPath = "/etc/clash";
+    public const string ConfigMountName = "config";
+    public const string ConfigFileName = "config.yaml";
 
     public readonly Output<string>? LoadBalancerIP;
     public readonly Output<string>? HttpLoadBalancerIP;
     public readonly Output<string>? ControlLoadBalancerIP;
 
-    public const string CONFIG = @"
-socks-port:1101
-port: 1102
-allow-lan: true
-external-controller: 127.0.0.1:1109
-";
-
     public static string Image(string version = "v1.14.0") {
         return "dreamacro/clash:" + version;
     }
+
+    public const string CONFIG = @"
+socks-port: 1101
+port: 1102
+allow-lan: true
+external-controller: 0.0.0.0:1109
+";
+
 
     private static Volume GetConfigVolume(
         Namespace ns,
@@ -41,7 +43,7 @@ external-controller: 127.0.0.1:1109
         return new ConfigMapVolume(
             ns, ConfigMapName,
             ConfigMountPath, ConfigMountName,
-            ("config.yaml", config)
+            (ConfigFileName, config)
         );
     }
 
@@ -57,9 +59,9 @@ external-controller: 127.0.0.1:1109
         image,
         new Volume[] {
             GetConfigVolume(ns, config),
-        },
-        args: new InputList<string> {
-            "-d", ConfigMountPath
+        }
+        , args: new InputList<string> {
+            "-f", $"{ConfigMountPath}/{ConfigFileName}"
         }
     ) {
         if (ingressHost != null) {
