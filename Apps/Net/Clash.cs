@@ -5,7 +5,7 @@ using Edger.Pulumi;
 using global::Pulumi;
 using global::Pulumi.Kubernetes.Types.Inputs.Core.V1;
 
-public class Clash : StatelesslApp {
+public class Clash : StatelessApp {
     public const string NAME = "clash";
     public const int Port = 7891;
     public const int HttpPort = 7890;
