@@ -32,7 +32,7 @@ public class Clash : StatefulApp {
 socks-port: 1101
 port: 1102
 allow-lan: true
-external-controller: 127.0.0.1:1109
+external-controller: 0.0.0.0:1109
 ";
 
 
