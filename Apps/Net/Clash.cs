@@ -29,7 +29,7 @@ public class Clash : StatefulApp {
     }
 
     public const string CONFIG = @"
-socks-port:1101
+socks-port: 1101
 port: 1102
 allow-lan: true
 external-controller: 127.0.0.1:1109
