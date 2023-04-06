@@ -17,9 +17,11 @@ public class Clash : StatefulApp {
 
     public const string LoadBalancerName = "clash-external";
     public const string HttpLoadBalancerName = "clash-http-external";
+    public const string ControlLoadBalancerName = "clash-control-external";
 
     public readonly Output<string>? LoadBalancerIP;
     public readonly Output<string>? HttpLoadBalancerIP;
+    public readonly Output<string>? ControlLoadBalancerIP;
 
     public const string CONFIG = @"
 socks-port:1101
@@ -49,6 +51,7 @@ external-controller: 127.0.0.1:1109
         string? ingressHost = null,
         int? lbPort = null,
         int? httpLbPort = null,
+        int? controlLbPort = null,
         string name = NAME
     ) : base(ns, name, "socks", Port, "http", HttpPort, "control", ControlPort,
         image,
@@ -69,6 +72,10 @@ external-controller: 127.0.0.1:1109
         if (httpLbPort != null) {
             var httpLb = ApplyLoadBalancer(HttpLoadBalancerName, httpLbPort.Value, HttpPort);
             HttpLoadBalancerIP = httpLb.LoadBalancerIP();
+        }
+        if (controlLbPort != null) {
+            var controlLb = ApplyLoadBalancer(ControlLoadBalancerName, controlLbPort.Value, ControlPort);
+            ControlLoadBalancerIP = controlLb.LoadBalancerIP();
         }
     }
 }
