@@ -18,6 +18,9 @@ public class Clash : StatefulApp {
     public const string LoadBalancerName = "clash-external";
     public const string HttpLoadBalancerName = "clash-http-external";
 
+    public readonly Output<string>? LoadBalancerIP;
+    public readonly Output<string>? HttpLoadBalancerIP;
+
     public const string CONFIG = @"
 socks-port:1101
 port: 1102
