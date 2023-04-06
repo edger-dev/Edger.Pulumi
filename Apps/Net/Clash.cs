@@ -39,7 +39,7 @@ external-controller: 127.0.0.1:1109
         return new ConfigMapVolume(
             ns, ConfigMapName,
             ConfigMountPath, ConfigMountName,
-            ("clash.yaml", config)
+            ("config.yaml", config)
         );
     }
 
