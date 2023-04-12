@@ -31,9 +31,7 @@ public class MariaDB : StatefulApp {
     public MariaDB(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
-        string rootPassword,
-        string user,
-        string password,
+        MySQL.Args args,
         int? lbPort = null,
         string name = NAME
     ) : base(ns, name, "db", Port,
@@ -42,9 +40,10 @@ public class MariaDB : StatefulApp {
             pvc
         },
         env: K8s.ContainerEnv(
-            ("MYSQL_ROOT_PASSWORD", rootPassword),
-            ("MYSQL_USER", user),
-            ("MYSQL_PASSWORD", password)
+            ("MYSQL_ROOT_PASSWORD", args.RootPassword),
+            ("MYSQL_DATABASE", args.Database),
+            ("MYSQL_USER", args.User),
+            ("MYSQL_PASSWORD", args.Password)
         ), args: new InputList<string> {
             "--disable_log_bin",
             "--max_allowed_packet=512000000",
