@@ -37,6 +37,8 @@ public class Minio : StatefulApp {
     public Minio(Namespace ns,
         string image,
         PvcTemplateVolume pvc,
+        string serverUrl,
+        string browserRedirectUrl,
         string adminPassword,
         string adminUser = "admin",
         string? ingressHost = null,
@@ -49,6 +51,8 @@ public class Minio : StatefulApp {
             pvc,
         },
         env: K8s.ContainerEnv(
+            ("MINIO_SERVER_URL", serverUrl)
+            ("MINIO_BROWSER_REDIRECT_URL", browserRedirectUrl)
             ("MINIO_ROOT_USER", adminUser),
             ("MINIO_ROOT_PASSWORD", adminPassword)
         ),
